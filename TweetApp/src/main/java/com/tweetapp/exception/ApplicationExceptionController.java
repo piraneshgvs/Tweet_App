@@ -45,5 +45,13 @@ public class ApplicationExceptionController {
 		return "Not a Valid Token";
 	}
 	
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(Exception.class)
+	public String handleNotValidTokenException(Exception ex) {
+		return "Invalid Credentials, please try with valid credentials.";
+	}
+	
+	
+	
 
 }

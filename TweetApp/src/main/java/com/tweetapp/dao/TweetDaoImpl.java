@@ -44,11 +44,11 @@ public class TweetDaoImpl implements TweetDao {
 
 		ArrayList<TweetTable> tweetData = new ArrayList<>();
 		List<TweetTable> tweetTableData = tweetInfoRepository.getByUserId(userId);
-		for (TweetTable i : tweetTableData) {
+		tweetTableData.forEach(i->{
 			List<ReplyTweetTable> replyTweetTableData = replyTweetInfoRepository.getByTweetId(i.getTweetId());
 			i.setReplytweetTable(replyTweetTableData);
 			tweetData.add(i);
-		}
+			});
 		return tweetData;
 	}
 
@@ -57,11 +57,11 @@ public class TweetDaoImpl implements TweetDao {
 
 		ArrayList<TweetTable> allTweetData = new ArrayList<>();
 		List<TweetTable> tweetTableData = tweetInfoRepository.findAll();
-		for (TweetTable i : tweetTableData) {
+		tweetTableData.forEach(i->{
 			List<ReplyTweetTable> replyTweetTableData = replyTweetInfoRepository.getByTweetId(i.getTweetId());
 			i.setReplytweetTable(replyTweetTableData);
 			allTweetData.add(i);
-		}
+		});
 		return allTweetData;
 	}
 
