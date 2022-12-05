@@ -48,7 +48,7 @@ public class ApplicationExceptionController {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(Exception.class)
 	public String handleNotValidTokenException(Exception ex) {
-		return "Invalid Credentials, please try with valid credentials.";
+		return "Something went wrong or Invalid Credentials, please try again.";
 	}
 	
 	

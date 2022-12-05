@@ -47,7 +47,7 @@ public class UserDaoImpl implements UserDao{
 			return "Email already exsist";
 		}
 		if(!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())) {
-			return "Please check your password";
+			return "Please check your Confirm password";
 		}
 		UserTable userTable = new UserTable();
 		userTable.setUserId(registerRequest.getUserId());

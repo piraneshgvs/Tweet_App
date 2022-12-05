@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +32,12 @@ import com.tweetapp.exception.NotValidException;
 import com.tweetapp.repository.ReplyTweetInfoRepository;
 import com.tweetapp.repository.TweetInfoRepository;
 
+import io.swagger.v3.oas.annotations.media.Content;
+
+
+
 @RestController
+@CrossOrigin("http://localhost:4200")
 @RequestMapping("/api/v1.0/tweets/")
 public class UserController {
 
@@ -82,7 +88,8 @@ public class UserController {
 		throw new NotValidException("Not a Valid token");
 	}
 
-	@GetMapping(path = "/getAllTweet", produces = MediaType.APPLICATION_JSON_VALUE)
+	
+	@GetMapping(path = "/getAllTweet",produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> getALLTweet(@RequestHeader(name = "Authorization", required = true) String token,
 			@RequestParam(required = true) String username) {
 		if (username != null) {
