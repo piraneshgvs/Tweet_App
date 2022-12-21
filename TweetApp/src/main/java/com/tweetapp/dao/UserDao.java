@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.tweetapp.entity.UserTable;
 import com.tweetapp.model.ForgotPassword;
+import com.tweetapp.model.LoginData;
 import com.tweetapp.model.RegisterRequest;
 
 @Service
@@ -19,4 +20,5 @@ public interface UserDao {
 	
 	public String forgotValidation(ForgotPassword forgotPassword);
 
+	public LoginData getUserDetails(String token, String userId);
 }

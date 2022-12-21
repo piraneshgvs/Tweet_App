@@ -29,7 +29,9 @@ import com.tweetapp.exception.NotValidException;
 import com.tweetapp.model.ForgotPassword;
 import com.tweetapp.model.JwtRequest;
 import com.tweetapp.model.JwtResponse;
+import com.tweetapp.model.LoginData;
 import com.tweetapp.model.RegisterRequest;
+import com.tweetapp.model.ValidationData;
 import com.tweetapp.repository.UserInfoRepostitory;
 
 import java.util.Objects;
@@ -50,6 +52,9 @@ public class NonUserController {
 
 	@Autowired
 	private UserDetailsService jwtInMemoryUserDetailsService;
+	
+	@Autowired
+	private LoginData loginData;
 
 	@Autowired
 	private JwtUserDetailsService jwtUserDetailsService;
@@ -60,28 +65,28 @@ public class NonUserController {
 	private static final Logger logger = LoggerFactory.getLogger(NonUserController.class);
 
 	@PostMapping(value = "/authenticate", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)throws  Exception {
+	public ResponseEntity<Object> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)throws  Exception {
 		
 	    authenticationRequest.setUsername(userDao.reassignUserName(authenticationRequest.getUsername()));
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
 		final UserDetails userDetails = jwtInMemoryUserDetailsService
 				.loadUserByUsername(authenticationRequest.getUsername());
-		//UserTable userInformation = userInfoRepository.getByUserId(authenticationRequest.getUsername());
 
 		final String token = jwtTokenUtil.generateToken(userDetails);
 		if(token!=null) {
+			loginData = userDao.getUserDetails(token,userDetails.getUsername());
 			userDao.updateLastLogingOut(authenticationRequest.getUsername());
 		}
 		logger.info("Token : "+token);
 
-		return new ResponseEntity<>(new JwtResponse(token),HttpStatus.OK);
+		return new ResponseEntity<>(loginData,HttpStatus.OK);
 	}
 
-	@PostMapping("/registers")
+	@PostMapping(value="/registers", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> userRegistration(@Validated @RequestBody(required = true) RegisterRequest registerRequest) {
 		
-		return new ResponseEntity<>(userDao.registerUser(registerRequest), HttpStatus.OK);
+		return new ResponseEntity<>(new ValidationData(userDao.registerUser(registerRequest)), HttpStatus.OK);
 
 	}
 	

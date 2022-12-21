@@ -33,5 +33,7 @@ public interface TweetDao {
 	public List<String> searchId(String partialUserId);
 	
 	public String resetPassword(String userId, String newPassword);
+	
+	public List<ReplyTweetTable> getRelyTweet(Long tweetId);
 
 }

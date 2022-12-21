@@ -70,7 +70,7 @@ public class TweetDaoImpl implements TweetDao {
 
 		TweetTable t = tweetInfoRepository.getByTweetId(tweetTable.getTweetId());
 
-		if (t.getUserId().equals(tweetTable.getUserId()) && t.getTweetId() == tweetTable.getTweetId()) {
+		if (t.getUserId().equals(tweetTable.getUserId()) && t.getTweetId().equals(tweetTable.getTweetId())) {
 			tweetInfoRepository.updateByTweetId(tweetTable.getRootTweet(), tweetTable.getTweetId());
 			return "Tweet Updated Successfully!!!";
 
@@ -82,7 +82,7 @@ public class TweetDaoImpl implements TweetDao {
 	@Override
 	public String deleteTweet(String userId, Long tweetId) throws NotValidException {
 		TweetTable t = tweetInfoRepository.getByTweetId(tweetId);
-		if (t.getUserId().equals(userId) && t.getTweetId() == tweetId) {
+		if (t.getUserId().equals(userId) && t.getTweetId().equals(tweetId)) {
 			tweetInfoRepository.deleteByTweetId(tweetId);
 			replyTweetInfoRepository.deleteByTweetId(tweetId);
 			return "Tweet deleted successfully!!!";
@@ -144,7 +144,7 @@ public class TweetDaoImpl implements TweetDao {
 
 	@Override
 	public List<String> searchId(String partialUserId) throws NotValidException {
-		
+		System.out.println("search");
 		return userInfoRepostitory.searchUserId(partialUserId);
 	}
 
@@ -155,6 +155,15 @@ public class TweetDaoImpl implements TweetDao {
 			return "Password updated successfully";
 		}
 		return "userId not exist in DB";
+	}
+
+	@Override
+	public List<ReplyTweetTable> getRelyTweet(Long tweetId) {
+		ArrayList<ReplyTweetTable> replies = new ArrayList<>();
+		if(tweetId!=null) {
+			replies = replyTweetInfoRepository.getByTweetId(tweetId);
+		}
+		return replies;
 	}
 	
 

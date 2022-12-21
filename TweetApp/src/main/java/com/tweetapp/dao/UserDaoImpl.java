@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.tweetapp.config.JwtTokenUtil;
 import com.tweetapp.entity.UserTable;
 import com.tweetapp.model.ForgotPassword;
+import com.tweetapp.model.LoginData;
 import com.tweetapp.model.RegisterRequest;
 import com.tweetapp.repository.UserInfoRepostitory;
 
@@ -30,6 +31,9 @@ public class UserDaoImpl implements UserDao{
 	@Autowired
 	private UserDetailsService jwtInMemoryUserDetailsService;
 	
+	@Autowired
+	private LoginData loginData;
+	
 	private static final Logger logger = LoggerFactory.getLogger(UserDaoImpl.class);
 
 	@Override
@@ -38,7 +42,7 @@ public class UserDaoImpl implements UserDao{
 		if(registerRequest.getUserId().trim().isEmpty()) {
 			return "Userid cannot be null or blank";
 		}
-	
+		
 		if(userInfoRepository.notInUserId(registerRequest.getUserId())!=null) {
 			
 			return "Userid already exist please try new combination";
@@ -49,6 +53,7 @@ public class UserDaoImpl implements UserDao{
 		if(!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())) {
 			return "Please check your Confirm password";
 		}
+		
 		UserTable userTable = new UserTable();
 		userTable.setUserId(registerRequest.getUserId());
 		userTable.setFirstName(registerRequest.getFirstName());
@@ -119,7 +124,21 @@ public class UserDaoImpl implements UserDao{
 			return token;
 			
 		}
-		return "Not a valid Response";
+		return "Not a valid Request";
+	}
+
+	@Override
+	public LoginData getUserDetails(String token, String userId) {
+		
+		UserTable userTable = userInfoRepository.getByUserId(userId);
+		loginData.setUserId(userId);
+		loginData.setFirstName(userTable.getFirstName());
+		loginData.setLastName(userTable.getLastName());
+		loginData.setEmailId(userTable.getEmailId());
+		loginData.setPhoneNo(userTable.getContactNumber());
+		loginData.setJwtResponse(token);
+		return loginData;
+				
 	}
 	
 
