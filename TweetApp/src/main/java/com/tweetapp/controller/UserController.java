@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tweetapp.dao.KafkaSender;
 import com.tweetapp.dao.TweetDao;
 import com.tweetapp.dao.TweetDaoImpl;
 import com.tweetapp.dao.UserDaoImpl;
@@ -54,6 +55,9 @@ public class UserController {
 
 	@Autowired
 	TweetDao tweetDao;
+	
+	@Autowired
+	KafkaSender kafkaSender;
 
 	@PostMapping("/addTweet")
 	public ResponseEntity<Object> postNewTweet(@RequestHeader(name = "Authorization", required = true) String token,
@@ -98,9 +102,9 @@ public class UserController {
 
 	
 	@GetMapping(path = "/getAllTweet",produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Object> getALLTweet(@RequestHeader(name = "Authorization", required = true) String token,
+	public ResponseEntity<Object> getALLTweet(@RequestHeader(value = "Authorization", required = true) String token,
 			@RequestParam(required = true) String username) {
-		System.out.println();
+		System.out.println(token);
 		if (username != null) {
 			if (token != null && userDaoImpl.validateToken(username, token)) {
 				ArrayList<TweetTable> allTweetData = tweetDao.getAllTweets();
@@ -123,6 +127,7 @@ public class UserController {
 	@DeleteMapping(path = "/deleteTweet", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> deleteTweet(@RequestHeader(name = "Authorization", required = true) String token,
 			@RequestParam(required = true) String userId, @RequestParam(required = true) Long tweetId) {
+		//kafkaSender.send("tweedId "+tweetId+" deleted by "+userId);
 		if (userId != null && tweetId != null && token != null && userDaoImpl.validateToken(userId, token)) {
 			
 			return new ResponseEntity<>(new ValidationData(tweetDao.deleteTweet(userId, tweetId)), HttpStatus.OK);
