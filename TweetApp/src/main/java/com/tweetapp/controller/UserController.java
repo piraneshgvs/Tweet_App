@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tweetapp.dao.KafkaSender;
 import com.tweetapp.dao.TweetDao;
 import com.tweetapp.dao.TweetDaoImpl;
 import com.tweetapp.dao.UserDaoImpl;
@@ -40,7 +40,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 
 
 @RestController
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin
 @RequestMapping("/api/v1.0/tweets/")
 public class UserController {
 
@@ -56,15 +56,14 @@ public class UserController {
 	@Autowired
 	TweetDao tweetDao;
 	
-	@Autowired
-	KafkaSender kafkaSender;
+	
 
 	@PostMapping("/addTweet")
 	public ResponseEntity<Object> postNewTweet(@RequestHeader(name = "Authorization", required = true) String token,
 			 @Valid @RequestBody(required = true) TweetTable tweetData) {
 
 		if (token != null && userDaoImpl.validateToken(tweetData.getUserId(), token)) {
-
+			
 			return new ResponseEntity<>(new JwtResponse(tweetDao.postTweet(tweetData)), HttpStatus.OK);
 		}
 		throw new NotValidException("Not a Valid token");
@@ -127,7 +126,7 @@ public class UserController {
 	@DeleteMapping(path = "/deleteTweet", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> deleteTweet(@RequestHeader(name = "Authorization", required = true) String token,
 			@RequestParam(required = true) String userId, @RequestParam(required = true) Long tweetId) {
-		//kafkaSender.send("tweedId "+tweetId+" deleted by "+userId);
+		
 		if (userId != null && tweetId != null && token != null && userDaoImpl.validateToken(userId, token)) {
 			
 			return new ResponseEntity<>(new ValidationData(tweetDao.deleteTweet(userId, tweetId)), HttpStatus.OK);

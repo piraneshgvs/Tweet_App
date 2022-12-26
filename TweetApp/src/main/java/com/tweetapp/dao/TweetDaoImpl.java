@@ -2,10 +2,12 @@ package com.tweetapp.dao;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.tweetapp.config.JwtTokenUtil;
@@ -32,10 +34,16 @@ public class TweetDaoImpl implements TweetDao {
 	@Autowired
 	JwtTokenUtil jwtTokenUtil;
 	
+	@Autowired
+	private KafkaTemplate<String, Object> template;
+	
+	private String topic = "posttweet";
+	
 	@Override
 	public String postTweet(TweetTable tweetData) throws NotValidException {
 		
 			tweetInfoRepository.save(tweetData);
+			//template.send(topic, tweetData);
 			return "Tweet Successfully Created";
 	}
 
@@ -49,6 +57,7 @@ public class TweetDaoImpl implements TweetDao {
 			i.setReplytweetTable(replyTweetTableData);
 			tweetData.add(i);
 			});
+		Collections.reverse(tweetData);
 		return tweetData;
 	}
 
@@ -62,6 +71,7 @@ public class TweetDaoImpl implements TweetDao {
 			i.setReplytweetTable(replyTweetTableData);
 			allTweetData.add(i);
 		});
+		Collections.reverse(allTweetData);
 		return allTweetData;
 	}
 
